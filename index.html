@@ -1,16 +1,539 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Om Bagal Analytics — BI Dashboards for US FMCG & CPG Brands</title>
-    <meta name="description" content="Custom BI dashboards for US FMCG & CPG brands. Find revenue leakage by channel, SKU and week. Delivered in 48 hours." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Om Bagal Analytics — Custom BI Dashboards for US FMCG & CPG Brands</title>
+<meta name="description" content="We build interactive BI dashboards for US FMCG & CPG brands — showing weekly sales, channel breakdown, revenue leakage & SKU performance. Delivered in 48 hours. No Tableau license needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
+<style>
+:root, [data-theme="light"] {
+  --color-bg:#f8f7f4; --color-surface:#faf9f7; --color-surface-2:#ffffff;
+  --color-surface-offset:#f2f0ec; --color-surface-offset-2:#eae8e3; --color-surface-dynamic:#e2e0da;
+  --color-divider:#dbd8d2; --color-border:#d0cdc6;
+  --color-text:#1a1916; --color-text-muted:#6b6a66; --color-text-faint:#b0afa9; --color-text-inverse:#f8f7f4;
+  --color-navy:#0f1923; --color-navy-light:#1a2836; --color-navy-muted:#8fa3b5;
+  --color-primary:#0a7c82; --color-primary-hover:#085f64; --color-primary-active:#064548; --color-primary-highlight:#c8e0e2;
+  --color-success:#2d7d46; --color-success-bg:#edf7f0; --color-warning:#b45309; --color-warning-bg:#fef3e2; --color-error:#c0392b; --color-error-bg:#fdf0ef;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem); --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem); --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem); --text-2xl:clamp(2rem,1.2rem + 2.5vw,3.5rem); --text-3xl:clamp(2.5rem,1rem + 4vw,4.5rem);
+  --space-1:0.25rem; --space-2:0.5rem; --space-3:0.75rem; --space-4:1rem; --space-5:1.25rem; --space-6:1.5rem;
+  --space-8:2rem; --space-10:2.5rem; --space-12:3rem; --space-16:4rem; --space-20:5rem; --space-24:6rem; --space-32:8rem;
+  --radius-sm:0.25rem; --radius-md:0.5rem; --radius-lg:0.75rem; --radius-xl:1rem; --radius-full:9999px;
+  --shadow-sm:0 1px 3px oklch(0.15 0.01 240 / 0.08); --shadow-md:0 4px 16px oklch(0.15 0.01 240 / 0.1); --shadow-lg:0 12px 40px oklch(0.15 0.01 240 / 0.14);
+  --font-display:'Instrument Serif',Georgia,serif; --font-body:'Inter',system-ui,sans-serif;
+  --content-narrow:640px; --content-default:960px; --content-wide:1160px; --transition:180ms cubic-bezier(0.16,1,0.3,1);
+}
+[data-theme="dark"] {
+  --color-bg:#0d0f12; --color-surface:#131619; --color-surface-2:#181c20; --color-surface-offset:#1d2228;
+  --color-surface-offset-2:#22282f; --color-surface-dynamic:#2a3038; --color-divider:#2e353e; --color-border:#373f4a;
+  --color-text:#d4d8dc; --color-text-muted:#7a8290; --color-text-faint:#4a5260; --color-text-inverse:#1a1e24;
+  --color-navy:#0a1520; --color-navy-light:#0f1e2e; --color-navy-muted:#5a7a90;
+  --color-primary:#3fa8b0; --color-primary-hover:#2d8f98; --color-primary-active:#1f7078; --color-primary-highlight:#1a3840;
+  --color-success:#4db870; --color-success-bg:#0e2018; --color-warning:#e08c30; --color-warning-bg:#261808; --color-error:#e05c4e; --color-error-bg:#250e0c;
+  --shadow-sm:0 1px 3px oklch(0 0 0 / 0.3); --shadow-md:0 4px 16px oklch(0 0 0 / 0.4); --shadow-lg:0 12px 40px oklch(0 0 0 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;min-height:100dvh}
+img,svg{display:block;max-width:100%}
+h1,h2,h3,h4,h5,h6{text-wrap:balance;line-height:1.15}
+p,li{text-wrap:pretty}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+a,button,[role="button"]{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition),opacity var(--transition)}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}}
+.container{max-width:var(--content-wide);margin-inline:auto;padding-inline:clamp(var(--space-4),4vw,var(--space-12))}
+.container--narrow{max-width:var(--content-default);margin-inline:auto;padding-inline:clamp(var(--space-4),4vw,var(--space-12))}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.nav{position:sticky;top:0;z-index:100;background:oklch(from var(--color-bg) l c h / 0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:var(--space-8)}
+.nav-logo{display:flex;align-items:center;gap:var(--space-3);font-family:var(--font-body);font-weight:700;font-size:var(--text-sm);letter-spacing:-0.01em}
+.nav-logo svg{flex-shrink:0}
+.nav-logo-name{color:var(--color-text)}
+.nav-logo-name span{color:var(--color-primary)}
+.nav-links{display:flex;align-items:center;gap:var(--space-6)}
+.nav-links a{font-size:var(--text-sm);color:var(--color-text-muted);font-weight:500}
+.nav-links a:hover{color:var(--color-text)}
+.nav-right{display:flex;align-items:center;gap:var(--space-3)}
+.btn-theme{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--radius-md);color:var(--color-text-muted)}
+.btn-theme:hover{background:var(--color-surface-offset);color:var(--color-text)}
+.btn-cta-nav{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--color-primary);color:#fff;padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;white-space:nowrap}
+.btn-cta-nav:hover{background:var(--color-primary-hover)}
+@media (max-width:768px){.nav-links{display:none}.nav-logo-name{font-size:13px}}
+.hero{background:var(--color-navy);padding-block:clamp(var(--space-16),10vw,var(--space-32));overflow:hidden;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 50%,oklch(0.45 0.12 192 / 0.18) 0%,transparent 70%);pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-16);align-items:center;position:relative}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:var(--space-2);background:oklch(0.45 0.12 192 / 0.15);border:1px solid oklch(0.45 0.12 192 / 0.3);color:#5fc8d0;font-size:var(--text-xs);font-weight:600;padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:var(--space-5)}
+.hero-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:#5fc8d0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:400;color:#f0ede8;line-height:1.08;margin-bottom:var(--space-6);letter-spacing:-0.02em}
+.hero h1 em{font-style:italic;color:#7dd4da}
+.hero-sub{font-size:var(--text-base);color:var(--color-navy-muted);max-width:48ch;margin-bottom:var(--space-8);line-height:1.65}
+.hero-cta-row{display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--color-primary);color:#fff;padding:var(--space-3) var(--space-6);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:700;letter-spacing:0.01em;box-shadow:0 4px 20px oklch(0.45 0.12 192 / 0.35)}
+.btn-primary:hover{background:var(--color-primary-hover);transform:translateY(-1px);box-shadow:0 8px 28px oklch(0.45 0.12 192 / 0.45)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--color-navy-muted);font-size:var(--text-sm);font-weight:500;padding:var(--space-3) var(--space-4);border:1px solid oklch(1 0 0 / 0.15);border-radius:var(--radius-md)}
+.btn-ghost:hover{color:#f0ede8;border-color:oklch(1 0 0 / 0.3)}
+.hero-trust{display:flex;align-items:center;gap:var(--space-4);margin-top:var(--space-8);padding-top:var(--space-8);border-top:1px solid oklch(1 0 0 / 0.08)}
+.hero-trust-label{font-size:var(--text-xs);color:var(--color-navy-muted);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap}
+.trust-logos{display:flex;align-items:center;gap:var(--space-6);flex-wrap:wrap}
+.trust-logo-item{font-size:var(--text-xs);font-weight:700;color:oklch(1 0 0 / 0.35);letter-spacing:0.04em;text-transform:uppercase}
+.hero-visual{position:relative}
+.hero-dashboard-frame{background:var(--color-surface-2);border-radius:var(--radius-xl);border:1px solid oklch(from var(--color-text) l c h / 0.1);box-shadow:var(--shadow-lg),0 0 0 1px oklch(1 0 0 / 0.05);overflow:hidden}
+.dash-topbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-surface-offset);border-bottom:1px solid var(--color-border)}
+.dash-dot{width:10px;height:10px;border-radius:50%}
+.dash-dot.r{background:#ff5f57}.dash-dot.y{background:#febc2e}.dash-dot.g{background:#28c840}
+.dash-topbar-title{flex:1;text-align:center;font-size:11px;color:var(--color-text-muted);font-weight:500}
+.dash-body{padding:var(--space-4)}
+.dash-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);margin-bottom:var(--space-4)}
+.dash-kpi{background:var(--color-surface-offset);border-radius:var(--radius-md);padding:var(--space-3);border:1px solid var(--color-border)}
+.dash-kpi-label{font-size:9px;color:var(--color-text-faint);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-1)}
+.dash-kpi-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.dash-kpi-val.green{color:var(--color-success)}.dash-kpi-val.red{color:var(--color-error)}.dash-kpi-val.blue{color:var(--color-primary)}
+.dash-kpi-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:3px;margin-top:3px;display:inline-block}
+.dash-kpi-badge.up{background:var(--color-success-bg);color:var(--color-success)}.dash-kpi-badge.down{background:var(--color-error-bg);color:var(--color-error)}
+.dash-chart-area{background:var(--color-surface-offset);border-radius:var(--radius-md);padding:var(--space-3);border:1px solid var(--color-border);margin-bottom:var(--space-3)}
+.dash-chart-title{font-size:9px;font-weight:600;color:var(--color-text-muted);margin-bottom:var(--space-2);text-transform:uppercase;letter-spacing:0.05em}
+.dash-bars{display:flex;align-items:flex-end;gap:6px;height:60px}
+.dash-bar-group{display:flex;gap:2px;align-items:flex-end;flex:1}
+.dash-bar{flex:1;border-radius:2px 2px 0 0;min-width:6px}
+.dash-actions{display:flex;flex-direction:column;gap:var(--space-2)}
+.dash-action-item{display:flex;align-items:center;gap:var(--space-2);background:var(--color-surface-offset);border-radius:var(--radius-sm);padding:6px 8px;font-size:9px;color:var(--color-text-muted);border:1px solid var(--color-border)}
+.dash-action-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dash-action-dot.red{background:#ef4444}.dash-action-dot.amber{background:#f59e0b}.dash-action-dot.blue{background:#3b82f6}
+.hero-badge{position:absolute;top:-14px;right:-14px;background:var(--color-primary);color:#fff;font-size:10px;font-weight:700;line-height:1.2;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);box-shadow:0 4px 12px oklch(0.45 0.12 192 / 0.4);white-space:nowrap}
+@media (max-width:900px){.hero-inner{grid-template-columns:1fr;gap:var(--space-10)}.hero-visual{order:-1;max-width:480px}}
+.leakage-section{padding-block:clamp(var(--space-12),6vw,var(--space-20));background:var(--color-surface-offset);border-block:1px solid var(--color-border)}
+.leakage-inner{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-16);align-items:center}
+.leakage-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-error);margin-bottom:var(--space-4)}
+.leakage-inner h2{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:400;line-height:1.1;margin-bottom:var(--space-4)}
+.leakage-inner h2 em{font-style:italic;color:var(--color-primary)}
+.leakage-inner p{color:var(--color-text-muted);font-size:var(--text-base);max-width:46ch;margin-bottom:var(--space-6)}
+.leakage-checklist{display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-8)}
+.leak-item{display:flex;align-items:flex-start;gap:var(--space-3);font-size:var(--text-sm)}
+.leak-icon{flex-shrink:0;width:20px;height:20px;color:var(--color-error);margin-top:2px}
+.leak-icon.green{color:var(--color-success)}
+.leakage-numbers{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
+.leak-num-card{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);box-shadow:var(--shadow-sm)}
+.leak-num-card.negative{border-color:oklch(from var(--color-error) l c h / 0.25);background:var(--color-error-bg)}
+.leak-num-card.positive{border-color:oklch(from var(--color-success) l c h / 0.25);background:var(--color-success-bg)}
+.leak-num-label{font-size:var(--text-xs);color:var(--color-text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-2)}
+.leak-num-val{font-size:var(--text-xl);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.leak-num-val.neg{color:var(--color-error)}.leak-num-val.pos{color:var(--color-success)}
+.leak-num-sub{font-size:var(--text-xs);color:var(--color-text-faint);margin-top:var(--space-1)}
+@media (max-width:768px){.leakage-inner{grid-template-columns:1fr;gap:var(--space-10)}}
+.process-section{padding-block:clamp(var(--space-16),8vw,var(--space-24))}
+.section-eyebrow{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-primary);margin-bottom:var(--space-3)}
+.section-heading{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:400;line-height:1.1;margin-bottom:var(--space-4)}
+.section-heading em{font-style:italic;color:var(--color-primary)}
+.section-sub{color:var(--color-text-muted);font-size:var(--text-base);max-width:54ch;margin-bottom:clamp(var(--space-10),5vw,var(--space-16))}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6);counter-reset:steps}
+.process-step{position:relative}
+.process-step::after{content:'';position:absolute;top:20px;left:calc(100% + var(--space-3));width:calc(100% - var(--space-6));height:1px;background:var(--color-border)}
+.process-step:last-child::after{display:none}
+.step-num{width:40px;height:40px;border-radius:var(--radius-full);background:var(--color-surface-offset);border:2px solid var(--color-border);display:flex;align-items:center;justify-content:center;font-size:var(--text-sm);font-weight:800;color:var(--color-primary);margin-bottom:var(--space-4);position:relative;z-index:1;font-variant-numeric:tabular-nums}
+.step-title{font-size:var(--text-sm);font-weight:700;margin-bottom:var(--space-2)}
+.step-desc{font-size:var(--text-sm);color:var(--color-text-muted);line-height:1.55}
+.step-time{display:inline-flex;align-items:center;gap:4px;margin-top:var(--space-3);font-size:var(--text-xs);font-weight:600;color:var(--color-primary);background:var(--color-primary-highlight);padding:2px 8px;border-radius:var(--radius-full)}
+@media (max-width:768px){.process-steps{grid-template-columns:1fr 1fr}.process-step::after{display:none}}
+@media (max-width:480px){.process-steps{grid-template-columns:1fr}}
+.features-section{padding-block:clamp(var(--space-12),6vw,var(--space-20));background:var(--color-navy)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-5)}
+.feature-card{background:oklch(1 0 0 / 0.04);border:1px solid oklch(1 0 0 / 0.09);border-radius:var(--radius-lg);padding:var(--space-6);transition:background var(--transition),border-color var(--transition)}
+.feature-card:hover{background:oklch(1 0 0 / 0.07);border-color:oklch(1 0 0 / 0.16)}
+.feature-icon{width:36px;height:36px;color:#5fc8d0;margin-bottom:var(--space-4)}
+.feature-title{font-size:var(--text-sm);font-weight:700;color:#f0ede8;margin-bottom:var(--space-2)}
+.feature-desc{font-size:var(--text-sm);color:#8fa3b5;line-height:1.6}
+.features-section .section-heading{color:#f0ede8}.features-section .section-eyebrow{color:#5fc8d0}.features-section .section-sub{color:#8fa3b5}
+@media (max-width:768px){.features-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.features-grid{grid-template-columns:1fr}}
+.diff-section{padding-block:clamp(var(--space-16),8vw,var(--space-24))}
+.diff-table-wrap{overflow-x:auto}
+.diff-table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+.diff-table th{padding:var(--space-3) var(--space-4);text-align:left;font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-muted);border-bottom:2px solid var(--color-border)}
+.diff-table th.highlight{color:var(--color-primary)}
+.diff-table td{padding:var(--space-3) var(--space-4);border-bottom:1px solid var(--color-border);vertical-align:middle}
+.diff-table tr:last-child td{border-bottom:none}
+.diff-table td:first-child{font-weight:500}
+.diff-table .col-ours{background:oklch(from var(--color-primary) l c h / 0.04)}
+.diff-table .col-ours td{border-left:2px solid var(--color-primary)}
+.check{color:var(--color-success);font-size:14px}
+.cross{color:var(--color-text-faint);font-size:14px}
+.highlight-badge{display:inline-block;background:var(--color-primary);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:var(--radius-full)}
+.proof-section{padding-block:clamp(var(--space-12),6vw,var(--space-20));background:var(--color-surface-offset);border-block:1px solid var(--color-border)}
+.proof-logos{display:flex;align-items:center;gap:var(--space-10);flex-wrap:wrap;margin-bottom:var(--space-12)}
+.proof-logo-item{font-size:var(--text-lg);font-weight:800;color:var(--color-text-faint);letter-spacing:-0.02em;transition:color var(--transition)}
+.proof-logo-item:hover{color:var(--color-text-muted)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-6)}
+.stat-card{text-align:center}
+.stat-val{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:400;color:var(--color-primary);line-height:1;margin-bottom:var(--space-2)}
+.stat-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.06em}
+@media (max-width:640px){.stats-row{grid-template-columns:1fr 1fr}}
+.pricing-section{padding-block:clamp(var(--space-16),8vw,var(--space-24))}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-5);margin-bottom:var(--space-8)}
+.price-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-8);box-shadow:var(--shadow-sm);position:relative}
+.price-card.featured,.price-card--featured{border-color:var(--color-primary);box-shadow:0 0 0 1px var(--color-primary),var(--shadow-md);background:var(--color-surface-2)}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--color-primary);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:var(--radius-full);white-space:nowrap;letter-spacing:0.04em}
+.price-name{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:var(--space-3)}
+.price-amount{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:400;line-height:1;margin-bottom:var(--space-1)}
+.price-amount sup{font-size:0.5em;vertical-align:super;font-family:var(--font-body);font-weight:700}
+.price-period{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-6)}
+.price-divider{height:1px;background:var(--color-border);margin-bottom:var(--space-6)}
+.price-features{display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-8)}
+.price-feat{display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-sm)}
+.price-feat-icon{flex-shrink:0;width:16px;height:16px;color:var(--color-success);margin-top:2px}
+.btn-price{width:100%;padding:var(--space-3) var(--space-4);background:var(--color-surface-offset);color:var(--color-text);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:700;text-align:center;display:block}
+.btn-price:hover{background:var(--color-surface-dynamic)}
+.btn-price.primary,.btn-price--featured{background:var(--color-primary);color:#fff;border-color:transparent}
+.btn-price.primary:hover,.btn-price--featured:hover{background:var(--color-primary-hover)}
+.pricing-note{text-align:center;font-size:var(--text-sm);color:var(--color-text-muted)}
+.pricing-note strong{color:var(--color-text)}
+@media (max-width:900px){.pricing-grid{grid-template-columns:repeat(2,1fr);max-width:100%;margin-inline:auto}}
+@media (max-width:540px){.pricing-grid{grid-template-columns:1fr}}
+.risk-section{padding-block:clamp(var(--space-12),5vw,var(--space-16));background:var(--color-navy);text-align:center}
+.risk-section h2{font-family:var(--font-display);font-size:var(--text-xl);font-weight:400;color:#f0ede8;margin-bottom:var(--space-4)}
+.risk-section p{font-size:var(--text-base);color:#8fa3b5;max-width:52ch;margin-inline:auto;margin-bottom:var(--space-8)}
+.risk-guarantees{display:flex;justify-content:center;gap:var(--space-8);flex-wrap:wrap}
+.risk-item{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:#5fc8d0;font-weight:600}
+.cta-section{padding-block:clamp(var(--space-20),10vw,var(--space-32));background:var(--color-bg);text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,oklch(from var(--color-primary) l c h / 0.06) 0%,transparent 70%);pointer-events:none}
+.cta-section h2{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:400;line-height:1.1;margin-bottom:var(--space-4)}
+.cta-section h2 em{font-style:italic;color:var(--color-primary)}
+.cta-section p{font-size:var(--text-base);color:var(--color-text-muted);max-width:52ch;margin-inline:auto;margin-bottom:var(--space-8)}
+.cta-buttons{display:flex;justify-content:center;gap:var(--space-4);flex-wrap:wrap}
+.btn-cta-large{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--color-primary);color:#fff;padding:var(--space-4) var(--space-8);border-radius:var(--radius-md);font-size:var(--text-base);font-weight:700;box-shadow:0 4px 24px oklch(0.45 0.12 192 / 0.3)}
+.btn-cta-large:hover{background:var(--color-primary-hover);transform:translateY(-2px);box-shadow:0 8px 32px oklch(0.45 0.12 192 / 0.4)}
+.btn-cta-secondary{display:inline-flex;align-items:center;gap:var(--space-2);background:var(--color-surface);color:var(--color-text);padding:var(--space-4) var(--space-8);border-radius:var(--radius-md);font-size:var(--text-base);font-weight:600;border:1px solid var(--color-border);box-shadow:var(--shadow-sm)}
+.btn-cta-secondary:hover{background:var(--color-surface-offset)}
+.cta-fine{margin-top:var(--space-6);font-size:var(--text-xs);color:var(--color-text-faint)}
+footer{background:var(--color-navy);padding-block:var(--space-10);border-top:1px solid oklch(1 0 0 / 0.06)}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)}
+.footer-logo{font-size:var(--text-sm);font-weight:700;color:oklch(1 0 0 / 0.5)}
+.footer-logo span{color:#5fc8d0}
+.footer-links{display:flex;gap:var(--space-6);flex-wrap:wrap}
+.footer-links a{font-size:var(--text-xs);color:oklch(1 0 0 / 0.35);font-weight:500}
+.footer-links a:hover{color:oklch(1 0 0 / 0.6)}
+.footer-copy{font-size:var(--text-xs);color:oklch(1 0 0 / 0.25)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}.reveal-delay-2{transition-delay:0.2s}.reveal-delay-3{transition-delay:0.3s}
+.counter{font-variant-numeric:tabular-nums}
+.urgency-bar{background:oklch(0.4 0.15 25);color:#fff;text-align:center;padding:var(--space-2) var(--space-4);font-size:var(--text-xs);font-weight:600;letter-spacing:0.02em}
+.urgency-bar strong{font-weight:800}
+#mascot-layer{position:fixed;inset:0;z-index:60;pointer-events:none}
+@media (max-width:540px){#mascot-layer{opacity:0.85}}
+</style>
+</head>
+<body>
+<div id="mascot-layer" aria-hidden="true"></div>
+<div class="urgency-bar">
+  <strong>June 2026:</strong> Accepting 3 new US clients this month — <strong>48-hour delivery</strong> guaranteed — 1 spot remaining.
+  <a href="#contact" style="color:#ffd08a;text-decoration:underline;margin-left:6px;">Reserve yours →</a>
+</div>
+<nav class="nav" aria-label="Main navigation">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" aria-label="Om Bagal Analytics home">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="4" y="14" width="7" height="14" rx="2" fill="#0a7c82"/>
+          <rect x="13" y="8" width="7" height="20" rx="2" fill="#0a7c82" opacity="0.75"/>
+          <rect x="22" y="4" width="6" height="24" rx="2" fill="#0a7c82" opacity="0.5"/>
+          <path d="M4 10 Q16 2 28 6" stroke="#0a7c82" stroke-width="1.5" fill="none" stroke-dasharray="2 2" opacity="0.5"/>
+        </svg>
+        <span class="nav-logo-name">Om Bagal <span>Analytics</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Page sections">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">What You Get</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="nav-right">
+        <button class="btn-theme" data-theme-toggle aria-label="Toggle dark mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-cta-nav">
+          Book a Call
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>For US FMCG & CPG Brands</div>
+        <h1 id="hero-heading">Your revenue is leaking.<br><em>You just can't see where.</em></h1>
+        <p class="hero-sub">We build fully custom <strong style="color:#7dd4da">HTML-powered dashboards</strong> that show US FMCG and CPG founders exactly where money bleeds — by channel, by SKU, by week. Opens in any browser, on any device. No software. No login. <strong style="color:#7dd4da">Delivered in 48 hours.</strong></p>
+        <div class="hero-cta-row">
+          <a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-primary">Book a 20-min Discovery Call<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#features" class="btn-ghost">See what's inside<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg></a>
+        </div>
+        <div class="hero-trust">
+          <span class="hero-trust-label">Trusted by teams at</span>
+          <div class="trust-logos"><span class="trust-logo-item">TATA GROUP</span><span class="trust-logo-item">ACCENTURE</span><span class="trust-logo-item">NorthStar</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-badge">⚡ 48-Hour Delivery</div>
+        <div style="position:absolute;bottom:-14px;left:-14px;background:var(--color-navy-light);border:1px solid oklch(1 0 0 / 0.15);color:#8fa3b5;font-size:9px;font-weight:700;padding:4px 10px;border-radius:var(--radius-md);letter-spacing:0.05em;text-transform:uppercase;">HTML · CSS · Vanilla JS</div>
+        <div class="hero-dashboard-frame">
+          <div class="dash-topbar"><span class="dash-dot r"></span><span class="dash-dot y"></span><span class="dash-dot g"></span><span class="dash-topbar-title">Brightfield Foods Co. — Channel BI Dashboard</span></div>
+          <div class="dash-body">
+            <div class="dash-kpi-row">
+              <div class="dash-kpi"><div class="dash-kpi-label">Revenue Billed</div><div class="dash-kpi-val blue">$348K</div><span class="dash-kpi-badge up">+3.6% Q1</span></div>
+              <div class="dash-kpi"><div class="dash-kpi-label">Collection Gap</div><div class="dash-kpi-val red">$74.5K</div><span class="dash-kpi-badge down">▼ 21.4%</span></div>
+              <div class="dash-kpi"><div class="dash-kpi-label">Best Margin</div><div class="dash-kpi-val green">18.2%</div><span class="dash-kpi-badge up">Walmart</span></div>
+            </div>
+            <div class="dash-chart-area">
+              <div class="dash-chart-title">Revenue by Channel — 7 Retailers</div>
+              <div class="dash-bars">
+                <div class="dash-bar-group"><div class="dash-bar" style="height:52px;background:#1d4ed8;opacity:0.85"></div><div class="dash-bar" style="height:38px;background:#16a34a;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:40px;background:#0369a1;opacity:0.85"></div><div class="dash-bar" style="height:28px;background:#16a34a;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:34px;background:#059669;opacity:0.85"></div><div class="dash-bar" style="height:24px;background:#16a34a;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:28px;background:#6366f1;opacity:0.85"></div><div class="dash-bar" style="height:14px;background:#ca8a04;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:22px;background:#7c3aed;opacity:0.85"></div><div class="dash-bar" style="height:16px;background:#16a34a;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:16px;background:#ea580c;opacity:0.85"></div><div class="dash-bar" style="height:4px;background:#dc2626;opacity:0.8"></div></div>
+                <div class="dash-bar-group"><div class="dash-bar" style="height:12px;background:#dc2626;opacity:0.85"></div><div class="dash-bar" style="height:3px;background:#dc2626;opacity:0.8"></div></div>
+              </div>
+            </div>
+            <div class="dash-actions">
+              <div class="dash-action-item"><span class="dash-action-dot red"></span>Protein Powder 2lb: 448 hours warehouse — $12.4K at risk</div>
+              <div class="dash-action-item"><span class="dash-action-dot amber"></span>Pause Instacart orders — platform fees making channel net-negative</div>
+              <div class="dash-action-item"><span class="dash-action-dot blue"></span>Restock Granola Bar at Walmart — maintain 2-week buffer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="leakage-section" id="leakage" aria-labelledby="leakage-heading">
+  <div class="container">
+    <div class="leakage-inner">
+      <div class="reveal">
+        <div class="leakage-label">The real cost of spreadsheet blindness</div>
+        <h2 id="leakage-heading">The average US FMCG brand loses <em>$80K–$200K annually</em> to preventable blind spots.</h2>
+        <p>Not from bad products. Not from the wrong channels. From not knowing which numbers to act on — and when. Your operations team is already generating the data. You're just not seeing it in one place.</p>
+        <ul class="leakage-checklist" role="list">
+          <li class="leak-item"><svg class="leak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg><span>Return losses quietly eroding your top-line revenue</span></li>
+          <li class="leak-item"><svg class="leak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg><span>Retailer outstanding payments aging past 45 days — working capital frozen</span></li>
+          <li class="leak-item"><svg class="leak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg><span>Platform fee bleed: Instacart and DoorDash appearing profitable until you do the math</span></li>
+          <li class="leak-item"><svg class="leak-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span><strong>Our dashboards surface all of this — in one view, updated weekly.</strong></span></li>
+        </ul>
+        <a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-primary" style="display:inline-flex">See it in your data<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+      <div class="leakage-numbers reveal reveal-delay-2">
+        <div class="leak-num-card negative"><div class="leak-num-label">Avg return losses uncaught</div><div class="leak-num-val neg counter" data-target="38400">$38,400</div><div class="leak-num-sub">per year across 5–7 retail channels</div></div>
+        <div class="leak-num-card negative"><div class="leak-num-label">Collection delays (avg)</div><div class="leak-num-val neg counter" data-target="56100">$56,100</div><div class="leak-num-sub">locked in 30–60 day retailer float</div></div>
+        <div class="leak-num-card negative"><div class="leak-num-label">Warehouse write-off risk</div><div class="leak-num-val neg counter" data-target="28200">$28,200</div><div class="leak-num-sub">products aging past sell-by window</div></div>
+        <div class="leak-num-card positive"><div class="leak-num-label">Avg savings after dashboard</div><div class="leak-num-val pos">$40K+</div><div class="leak-num-sub">in first 6 months from visibility alone</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="process-section" id="how-it-works" aria-labelledby="process-heading">
+  <div class="container--narrow">
+    <div class="reveal"><div class="section-eyebrow">The Process</div><h2 class="section-heading" id="process-heading">From your raw data to <em>live dashboard</em> in 48 hours</h2><p class="section-sub">No lengthy onboarding. No 3-month retainer before results. You share your data — we build and deliver.</p></div>
+    <div class="process-steps">
+      <div class="process-step reveal"><div class="step-num">01</div><h3 class="step-title">Discovery Call</h3><p class="step-desc">30-minute Zoom. We understand your channels, SKUs, pain points and current reporting setup.</p><span class="step-time"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hour 0–2</span></div>
+      <div class="process-step reveal reveal-delay-1"><div class="step-num">02</div><h3 class="step-title">Data Handoff</h3><p class="step-desc">Share your sales exports — Google Sheets, Excel, CSV from your POS or ERP. No special integrations needed.</p><span class="step-time"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hour 2–6</span></div>
+      <div class="process-step reveal reveal-delay-2"><div class="step-num">03</div><h3 class="step-title">Build & Refine</h3><p class="step-desc">We build your fully interactive dashboard with your real data. One mid-point check-in on Hour 24 for feedback.</p><span class="step-time"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hours 6–44</span></div>
+      <div class="process-step reveal reveal-delay-3"><div class="step-num">04</div><h3 class="step-title">Delivery</h3><p class="step-desc">A single HTML file lands in your inbox. Double-click to open in Chrome, Safari or Edge. No login. No license. No IT. Yours forever.</p><span class="step-time"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Hour 48</span></div>
+    </div>
+  </div>
+</section>
+<section class="features-section" id="features" aria-labelledby="features-heading">
+  <div class="container--narrow">
+    <div class="reveal"><div class="section-eyebrow">What's Inside Every Dashboard</div><h2 class="section-heading" id="features-heading">Built for the decisions <em>you actually make</em></h2><p class="section-sub">Every dashboard is built in pure HTML/JS — no framework, no license, no IT setup. Runs in Chrome, Safari, Edge, on any laptop or tablet your team already uses.</p></div>
+    <div class="features-grid">
+      <div class="feature-card reveal"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/><polyline points="7 8 12 13 17 8"/></svg><h3 class="feature-title">Channel Revenue Breakdown</h3><p class="feature-desc">Weekly, monthly, quarterly revenue split across every retail channel — Walmart, Amazon, Target, DTC, Instacart and more.</p></div>
+      <div class="feature-card reveal reveal-delay-1"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><h3 class="feature-title">Revenue Leakage Alert</h3><p class="feature-desc">Returns, collection gaps, warehouse write-off risk and platform fee drain — quantified in dollars with assigned severity.</p></div>
+      <div class="feature-card reveal reveal-delay-2"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><h3 class="feature-title">SKU Performance View</h3><p class="feature-desc">Top movers, loss SKUs, at-risk products and velocity trends — ranked by revenue, margin, and sell-through rate.</p></div>
+      <div class="feature-card reveal"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><h3 class="feature-title">Net Margin by Channel</h3><p class="feature-desc">True margin after platform fees, delivery costs and return rates — so you know which channels are actually profitable.</p></div>
+      <div class="feature-card reveal reveal-delay-1"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><h3 class="feature-title">Retailer Outstanding Tracker</h3><p class="feature-desc">Every retailer ranked by outstanding amount and days overdue — so collections conversations happen before 60-day float.</p></div>
+      <div class="feature-card reveal reveal-delay-2"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h3 class="feature-title">Today's Priority Actions</h3><p class="feature-desc">Not just charts — 3–5 specific, dated action items generated from your data. The thing your ops lead actually needs each morning.</p></div>
+    </div>
+  </div>
+</section>
+<section class="diff-section" id="compare" aria-labelledby="diff-heading">
+  <div class="container--narrow">
+    <div class="reveal"><div class="section-eyebrow">Why HTML-Native Dashboards Win</div><h2 class="section-heading" id="diff-heading">No software. No license. <em>Just your data.</em></h2><p class="section-sub">We build in pure HTML, CSS and JavaScript — so your dashboard runs anywhere, forever, with zero dependencies. Need Tableau or Power BI instead? We do that too. But 9 out of 10 clients never ask.</p></div>
+    <div class="diff-table-wrap reveal">
+      <table class="diff-table" aria-label="Comparison">
+        <thead><tr><th>What matters to you</th><th class="highlight">Om Bagal Analytics <span class="highlight-badge">US</span></th><th>Tableau</th><th>Power BI Premium</th></tr></thead>
+        <tbody>
+          <tr><td>Setup time to first insight</td><td class="col-ours"><strong style="color:var(--color-success)">48 hours</strong></td><td>4–8 weeks</td><td>3–6 weeks</td></tr>
+          <tr><td>License cost / year</td><td class="col-ours"><strong style="color:var(--color-success)">$0 (one-time project fee)</strong></td><td>$840–$3,360 per user</td><td>$240–$4,800 per user</td></tr>
+          <tr><td>Pure HTML — opens anywhere, no install, no license</td><td class="col-ours"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Built specifically for your channels & SKUs</td><td class="col-ours"><span class="check">✓</span></td><td><span class="cross">✗ (template-based)</span></td><td><span class="cross">✗ (template-based)</span></td></tr>
+          <tr><td>Priority action items generated</td><td class="col-ours"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+          <tr><td>Requires software license / IT setup</td><td class="col-ours"><strong style="color:var(--color-success)">None</strong></td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Dedicated human who knows your business</td><td class="col-ours"><span class="check">✓</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="proof-section" id="proof" aria-labelledby="proof-heading">
+  <div class="container--narrow">
+    <div class="reveal"><div class="section-eyebrow">Track Record</div><h2 class="section-heading" id="proof-heading">Built dashboards for teams at</h2>
+      <div class="proof-logos"><span class="proof-logo-item">Tata Group</span><span class="proof-logo-item">Accenture</span><span class="proof-logo-item">NorthStar</span></div>
+    </div>
+    <div class="stats-row reveal">
+      <div class="stat-card"><div class="stat-val counter" data-target="8">8</div><div class="stat-label">Dashboards Built</div></div>
+      <div class="stat-card"><div class="stat-val">48 hours</div><div class="stat-label">Avg Delivery Time</div></div>
+      <div class="stat-card"><div class="stat-val">$0</div><div class="stat-label">License Cost to Client</div></div>
+      <div class="stat-card"><div class="stat-val">100%</div><div class="stat-label">Browser-Native Delivery</div></div>
+    </div>
+  </div>
+</section>
+<section class="pricing-section" id="pricing" aria-labelledby="pricing-heading">
+  <div class="container--narrow">
+    <div class="reveal" style="text-align:center;margin-bottom:clamp(var(--space-10),5vw,var(--space-16))"><div class="section-eyebrow">Transparent Pricing</div><h2 class="section-heading" id="pricing-heading">One project. <em>One flat fee.</em></h2><p class="section-sub" style="margin-inline:auto">No monthly surprises. No license creep. You own the dashboard outright.</p></div>
+    <div class="pricing-grid">
+      <div class="price-card reveal"><div class="price-name">Starter</div><div class="price-amount"><sup>$</sup>999</div><div class="price-period">one-time flat fee</div><div class="price-divider"></div><ul class="price-features" role="list"><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>1 custom HTML dashboard</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Up to 3 data sources (CSV / Sheets)</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Weekly + Monthly view</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>2 revision rounds</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>48-hour delivery</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>You own the file — no license ever</li></ul><a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-price">Get Started</a></div>
+      <div class="price-card price-card--featured reveal reveal-delay-1"><div class="price-badge">Most Popular</div><div class="price-name">Growth</div><div class="price-amount"><sup>$</sup>1,500</div><div class="price-period">one-time flat fee</div><div class="price-divider"></div><ul class="price-features" role="list"><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>2 custom HTML dashboards</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Up to 5 data sources</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Weekly / Monthly / Quarterly views</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Full FMCG channel breakdown</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>3 revision rounds</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>48-hour delivery</li></ul><a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-price btn-price--featured">Get Started</a></div>
+      <div class="price-card reveal reveal-delay-2"><div class="price-name">Pro</div><div class="price-amount"><sup>$</sup>2,100</div><div class="price-period">one-time flat fee</div><div class="price-divider"></div><ul class="price-features" role="list"><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Multi-tab: Distribution + Products + Actions</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Full channel + warehouse aging view</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cross-filtering on all dimensions</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Priority action engine (daily decisions)</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>30-day post-delivery support</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Monthly data refresh add-on available</li></ul><a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-price">Get Started</a></div>
+      <div class="price-card reveal reveal-delay-3" style="border-color:oklch(from var(--color-primary) l c h / 0.35);"><div class="price-name">Enterprise</div><div class="price-amount" style="font-size:var(--text-xl);padding-block:var(--space-3)">Let's Talk</div><div class="price-period">custom scope · custom price</div><div class="price-divider"></div><ul class="price-features" role="list"><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Multi-brand or multi-region rollups</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Live API / Google Sheets pipeline</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tableau or Power BI if required by IT</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Dedicated Slack + ongoing retainer</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>SLA-backed weekly refresh</li><li class="price-feat"><svg class="price-feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>White-label option available</li></ul><a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener" class="btn-price" style="background:var(--color-primary);color:var(--color-text-inverse);">Book a Call</a></div>
+    </div>
+    <p class="pricing-note reveal"><strong>Monthly retainer: $499–$799/mo</strong> — weekly data refresh + unlimited minor edits. Perfect for fast-moving brands.<br><span style="color:var(--color-text-faint)">All prices in USD. 50% upfront, 50% on delivery. Payments via Wise, PayPal, or ACH.</span></p>
+  </div>
+</section>
+<section class="risk-section" aria-labelledby="risk-heading">
+  <div class="container--narrow">
+    <h2 id="risk-heading">Zero risk. We prove value first.</h2>
+    <p>Before you pay anything, we'll send you a live demo built on mock data that looks exactly like your dashboard will. If you don't love what you see in the first 30 seconds, there's nothing to discuss.</p>
+    <div class="risk-guarantees">
+      <div class="risk-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Free demo before any payment</div>
+      <div class="risk-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>50% upfront, 50% only on delivery</div>
+      <div class="risk-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>You own the HTML file outright — forever</div>
+      <div class="risk-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>No surprise scope creep</div>
+    </div>
+  </div>
+</section>
+<section class="cta-section" id="contact" aria-labelledby="cta-heading">
+  <div class="container--narrow" style="position:relative;z-index:1">
+    <div class="reveal">
+      <div class="section-eyebrow" style="justify-content:center;display:flex">Start Today</div>
+      <h2 id="cta-heading">Your revenue picture,<br><em>clear in 48 hours.</em></h2>
+      <p>Book a free 20-minute discovery call, or send a message on LinkedIn and we'll respond within 4 hours. DM "DEMO" and we'll send you the live Brightfield Foods dashboard — no call required.</p>
+      <div class="cta-buttons">
+        <a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener noreferrer" class="btn-cta-large"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Book a 20-min Discovery Call</a>
+        <a href="https://www.linkedin.com/in/ombagal-analytics" target="_blank" rel="noopener noreferrer" class="btn-cta-secondary"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>DM on LinkedIn</a>
+        <a href="mailto:ombagal.official@gmail.com" class="btn-cta-secondary"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Send an Email</a>
+      </div>
+      <p class="cta-fine">Typical response time: under 4 hours (US business hours) · Based in Pune, India · Serving US clients globally</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4);margin-top:var(--space-12)" class="reveal">
+      <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);text-align:center;"><div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:var(--space-2)">Book a Call</div><a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener noreferrer" style="font-size:var(--text-sm);color:var(--color-primary);font-weight:600">cal.com/om-bagal-ji5maf</a></div>
+      <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);text-align:center;"><div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:var(--space-2)">Email</div><a href="mailto:ombagal.official@gmail.com" style="font-size:var(--text-sm);color:var(--color-primary);font-weight:600">ombagal.official@gmail.com</a></div>
+      <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-5);text-align:center;"><div style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);margin-bottom:var(--space-2)">LinkedIn</div><a href="https://www.linkedin.com/in/ombagal-analytics" target="_blank" rel="noopener noreferrer" style="font-size:var(--text-sm);color:var(--color-primary);font-weight:600">linkedin.com/in/ombagal-analytics</a></div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Om Bagal <span>Analytics</span></div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://cal.com/om-bagal-ji5maf" target="_blank" rel="noopener noreferrer">Book a Call</a>
+        <a href="https://www.linkedin.com/in/ombagal-analytics" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </nav>
+      <span class="footer-copy">© 2026 Om Bagal Analytics · Pure HTML Dashboards · Built in Pune · Serving the US</span>
+    </div>
+  </div>
+</footer>
+<script>
+(function(){
+  const t=document.querySelector('[data-theme-toggle]');const r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  function updateIcon(){if(!t)return;t.innerHTML=d==='dark'?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';}
+  updateIcon();
+  t&&t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);t.setAttribute('aria-label','Switch to '+(d==='dark'?'light':'dark')+' mode');updateIcon();});
+})();
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>obs.observe(el));
+})();
+document.addEventListener('DOMContentLoaded',()=>{if(window.lucide)lucide.createIcons();});
+</script>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const layer=document.getElementById('mascot-layer');
+  if(!layer)return;
+  // Pin the mascot to the bottom-right corner so it is always clearly visible.
+  layer.style.cssText='position:fixed;right:0;bottom:0;width:340px;height:380px;z-index:60;pointer-events:none';
+
+  // 2D fallback drawn if Three.js/WebGL is unavailable
+  function fallback(){
+    const c=document.createElement('canvas');c.width=340;c.height=380;c.style.width='100%';c.style.height='100%';
+    layer.appendChild(c);const x=c.getContext('2d');let f=0;
+    (function d(){f++;x.clearRect(0,0,340,380);const ac=getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()||'#0a7c82';
+      const cx=170,cy=200+Math.sin(f/30)*6;
+      x.fillStyle='#1a2836';x.fillRect(cx-55,cy-40,110,120);
+      x.fillStyle=ac;x.fillRect(cx-42,cy-28,84,90);
+      x.fillStyle='#fff';for(let i=0;i<4;i++){x.fillRect(cx-34+i*22,cy+40-(14+i*9),14,14+i*9);}
+      x.strokeStyle=ac;x.lineWidth=10;x.beginPath();x.arc(cx,cy-72,30,0,Math.PI*2);x.stroke();
+      x.fillStyle='#fff';x.beginPath();x.arc(cx-10,cy-72,5,0,7);x.arc(cx+10,cy-72,5,0,7);x.fill();
+      requestAnimationFrame(d);})();
+  }
+  if(!window.THREE){fallback();return;}
+  let renderer;
+  try{renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});}catch(e){fallback();return;}
+
+  const W=340,H=380;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(42,W/H,0.1,100);camera.position.set(0,0.4,8.5);
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  layer.appendChild(renderer.domElement);
+  function accent(){return getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim()||'#0a7c82';}
+  const robot=new THREE.Group();robot.scale.setScalar(1.25);scene.add(robot);
+  const teal=new THREE.MeshStandardMaterial({color:new THREE.Color(accent()),metalness:.5,roughness:.35});
+  const shell=new THREE.MeshStandardMaterial({color:0x1a2836,metalness:.6,roughness:.4});
+  const white=new THREE.MeshStandardMaterial({color:0xf0ede8,metalness:.2,roughness:.6});
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.9,0.5),shell);robot.add(body);
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(1.25,1.45),teal);screen.position.z=0.26;body.add(screen);
+  for(let i=0;i<4;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(0.18,0.3+i*0.18,0.04),white);b.position.set(-0.45+i*0.3,-0.4+(0.15+i*0.09),0.28);body.add(b);}
+  const head=new THREE.Group();head.position.y=1.45;robot.add(head);
+  head.add(new THREE.Mesh(new THREE.TorusGeometry(0.45,0.16,16,40),teal));
+  const eye1=new THREE.Mesh(new THREE.SphereGeometry(0.08,16,16),white);eye1.position.set(-0.15,0,0.2);head.add(eye1);
+  const eye2=eye1.clone();eye2.position.x=0.15;head.add(eye2);
+  const armGeo=new THREE.CylinderGeometry(0.1,0.1,1,12);
+  const armL=new THREE.Mesh(armGeo,shell);armL.position.set(-1.05,0.2,0);armL.rotation.z=0.5;robot.add(armL);
+  const armR=armL.clone();armR.position.x=1.05;armR.rotation.z=-0.5;robot.add(armR);
+  const TOOLS=[0xF2C811,0x4285F4,0xE97627,0x00C5A1,0x217346];
+  function tile(color){const g=new THREE.Group();const card=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.6,0.06),new THREE.MeshStandardMaterial({color,metalness:.3,roughness:.45,emissive:color,emissiveIntensity:.25}));g.add(card);for(let i=0;i<3;i++){const bar=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.12+i*0.1,0.02),new THREE.MeshStandardMaterial({color:0xffffff}));bar.position.set(-0.18+i*0.18,-0.1+(0.06+i*0.05),0.045);g.add(bar);}return g;}
+  const tiles=TOOLS.map(c=>{const g=tile(c);robot.add(g);return g;});
+  scene.add(new THREE.AmbientLight(0xffffff,.7));
+  const key=new THREE.DirectionalLight(0xffffff,1.1);key.position.set(3,5,5);scene.add(key);
+  const rim=new THREE.PointLight(new THREE.Color(accent()),1.4,30);rim.position.set(-4,2,3);scene.add(rim);
+  const clock=new THREE.Clock();
+  function loop(){const t=clock.getElapsedTime();
+    robot.rotation.y=Math.sin(t*0.6)*0.5;
+    robot.position.y=Math.sin(t*2)*0.06;
+    armL.rotation.x=Math.sin(t*4)*0.5;armR.rotation.x=-Math.sin(t*4)*0.5;head.position.y=1.45+Math.sin(t*2)*0.04;
+    tiles.forEach((g,i)=>{const a=t*0.6+i*(Math.PI*2/tiles.length);g.position.set(Math.cos(a)*1.9,0.6+Math.sin(a*1.3)*0.5,Math.sin(a)*0.6);g.lookAt(camera.position);});
+    const ac=new THREE.Color(accent());teal.color.copy(ac);rim.color.copy(ac);
+    renderer.render(scene,camera);requestAnimationFrame(loop);}
+  loop();
+})();
+</script>
+</body>
 </html>
